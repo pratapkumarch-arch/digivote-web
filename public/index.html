@@ -61,23 +61,6 @@
       font-size: 0.95rem;
     }
     .disclaimer strong { display: block; margin-bottom: 0.25rem; }
-    .ctas {
-      display: flex; flex-wrap: wrap; gap: 0.75rem;
-      justify-content: center; margin: 1.25rem 0 1.75rem;
-    }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      min-height: 48px; padding: 0.7rem 1.15rem; border-radius: 999px;
-      text-decoration: none; font-weight: 650; font-size: 0.98rem;
-      border: 1px solid transparent;
-    }
-    .btn-primary { background: var(--forest); color: #fff; }
-    .btn-primary:hover { background: #082e23; }
-    .btn-secondary { background: var(--card); color: var(--forest); border-color: var(--line); }
-    .btn-secondary:hover { border-color: var(--leaf); }
-    .btn[aria-disabled="true"] {
-      opacity: 0.55; pointer-events: none; cursor: not-allowed;
-    }
     section {
       background: var(--card);
       border: 1px solid var(--line);
@@ -96,6 +79,38 @@
     .links { display: grid; gap: 0.45rem; }
     .links a { text-decoration: none; font-weight: 600; }
     .links a:hover { text-decoration: underline; }
+    .get-app {
+      text-align: center;
+      padding: 1.5rem 1.2rem;
+      box-shadow: 0 10px 28px rgba(11, 61, 46, 0.08);
+    }
+    .app-icon {
+      display: block; margin: 0 auto;
+      width: 96px; height: 96px; border-radius: 22px;
+      box-shadow: 0 8px 24px rgba(11, 61, 46, 0.18);
+    }
+    .rating {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 0.2rem 0.5rem; margin-top: 0.85rem;
+    }
+    .rating[hidden] { display: none; }
+    .stars {
+      position: relative; display: inline-block;
+      font-size: 1.45rem; line-height: 1; letter-spacing: 0.08em;
+      color: #d9d9d9;
+    }
+    .stars-fill {
+      position: absolute; inset: 0 auto 0 0;
+      overflow: hidden; white-space: nowrap; color: #f2a33a;
+    }
+    .rating-value { font-size: 1.35rem; font-weight: 650; }
+    .rating-count { flex-basis: 100%; color: var(--muted); font-size: 0.95rem; }
+    .badges {
+      display: flex; flex-wrap: wrap; gap: 0.9rem;
+      justify-content: center; margin-top: 1.25rem;
+    }
+    .badges a { display: inline-block; line-height: 0; }
+    .badges img { height: 46px; width: auto; }
     footer {
       margin-top: 1.75rem; text-align: center;
       color: var(--muted); font-size: 0.88rem;
@@ -117,10 +132,22 @@
       DigiVote is a private community tool for informal sentiment only. It is not a government service and has no legal effect on any real election. For adults 18+.
     </div>
 
-    <div class="ctas">
-      <a class="btn btn-primary" href="https://apps.apple.com/app/digivote/id6801540722" rel="noopener">Download on the App Store</a>
-      <a class="btn btn-secondary" href="https://play.google.com/store/apps/details?id=com.pratapchittiboyna.digivote" rel="noopener">Get it on Google Play</a>
-    </div>
+    <section class="get-app" aria-label="Download DigiVote">
+      <img class="app-icon" src="/digivote-icon.png" width="96" height="96" alt="DigiVote app icon" />
+      <div class="rating" id="app-rating" hidden>
+        <span class="stars" aria-hidden="true"><span class="stars-fill" id="app-rating-fill">★★★★★</span>★★★★★</span>
+        <span class="rating-value" id="app-rating-value"></span>
+        <span class="rating-count" id="app-rating-count"></span>
+      </div>
+      <div class="badges">
+        <a href="https://apps.apple.com/in/app/digivote/id6801540722" target="_blank" rel="noopener">
+          <img src="/badges/app-store.png" width="132" height="46" alt="Download DigiVote on the App Store" />
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=com.pratapchittiboyna.digivote" target="_blank" rel="noopener">
+          <img src="/badges/google-play.png" width="132" height="46" alt="Get DigiVote on Google Play" />
+        </a>
+      </div>
+    </section>
 
     <section>
       <h2>What you can do</h2>
@@ -160,5 +187,25 @@
       <p>Package: com.pratapchittiboyna.digivote</p>
     </footer>
   </div>
+  <script>
+    (function () {
+      fetch('https://itunes.apple.com/lookup?id=6801540722&country=in')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var app = (data.results || [])[0] || {};
+          var avg = Number(app.averageUserRating);
+          var count = Number(app.userRatingCount);
+          if (!avg || !count) return;
+          document.getElementById('app-rating-fill').style.width = (avg / 5 * 100) + '%';
+          document.getElementById('app-rating-value').textContent = avg.toFixed(1);
+          document.getElementById('app-rating-count').textContent =
+            '(' + count.toLocaleString('en-IN') + (count === 1 ? ' rating' : ' ratings') + ' on the App Store)';
+          var box = document.getElementById('app-rating');
+          box.setAttribute('aria-label', 'Rated ' + avg.toFixed(1) + ' out of 5 on the App Store');
+          box.hidden = false;
+        })
+        .catch(function () {});
+    })();
+  </script>
 </body>
 </html>
