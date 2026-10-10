@@ -111,6 +111,65 @@
     }
     .badges a { display: inline-block; line-height: 0; }
     .badges img { height: 46px; width: auto; }
+    .intro { text-align: center; }
+    .intro-lead {
+      margin: 0 auto 0.9rem;
+      max-width: 38rem;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.1rem;
+      margin: 0 auto 1rem;
+    }
+    .lang-sep {
+      color: #b7b0a4;
+      font-weight: 500;
+      line-height: 1;
+      user-select: none;
+    }
+    .lang-toggle button {
+      appearance: none;
+      font: inherit;
+      font-weight: 650;
+      font-size: 1rem;
+      color: var(--muted);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: 999px;
+      padding: 0.3rem 0.75rem;
+      cursor: pointer;
+    }
+    .lang-toggle button:hover { color: var(--forest); }
+    .lang-toggle button[aria-checked="true"] {
+      color: var(--forest);
+      background: #e7f2ec;
+      border-color: #c5dfd2;
+    }
+    .lang-toggle button:focus-visible {
+      outline: 2px solid var(--leaf);
+      outline-offset: 2px;
+    }
+    .video-frame {
+      width: min(100%, 360px, calc(72vh * 9 / 16));
+      margin: 0 auto;
+    }
+    .video-frame video {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 9 / 16;
+      border-radius: 18px;
+      background: #10241c;
+      box-shadow: 0 12px 32px rgba(11, 61, 46, 0.16);
+    }
+    .intro-note {
+      margin: 0.8rem 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
     footer {
       margin-top: 1.75rem; text-align: center;
       color: var(--muted); font-size: 0.88rem;
@@ -147,6 +206,26 @@
           <img src="/badges/google-play.png" width="132" height="46" alt="Get DigiVote on Google Play" />
         </a>
       </div>
+    </section>
+
+    <section class="intro" aria-labelledby="intro-heading">
+      <h2 id="intro-heading">Watch the DigiVote intro</h2>
+      <p class="intro-lead">A three-minute walkthrough: sign in, choose your constituency, and follow a poll from nomination to results.</p>
+      <div class="lang-toggle" id="intro-lang" role="radiogroup" aria-label="Intro video language">
+        <button type="button" role="radio" id="lang-en" aria-checked="true" tabindex="0" lang="en">English</button>
+        <span class="lang-sep" aria-hidden="true">|</span>
+        <button type="button" role="radio" id="lang-te" aria-checked="false" tabindex="-1" lang="te">తెలుగు</button>
+      </div>
+      <figure class="video-frame">
+        <video id="intro-video" controls playsinline webkit-playsinline preload="metadata" width="720" height="1280"
+               poster="/videos/digivote-intro-english-poster.jpg"
+               aria-label="DigiVote intro video in English">
+          <source id="intro-source" src="/videos/digivote-intro-english.mp4" type="video/mp4" />
+          <track id="track-en" kind="captions" src="/videos/digivote-intro-english.vtt" srclang="en" label="English" default />
+          <track id="track-te" kind="captions" src="/videos/digivote-intro-telugu.vtt" srclang="te" label="తెలుగు" />
+        </video>
+        <figcaption class="intro-note">Captions are on for the selected language. Turn them off in the player if you prefer.</figcaption>
+      </figure>
     </section>
 
     <section>
@@ -205,6 +284,125 @@
           box.hidden = false;
         })
         .catch(function () {});
+    })();
+
+    (function () {
+      var LANGS = {
+        en: {
+          src: '/videos/digivote-intro-english.mp4',
+          poster: '/videos/digivote-intro-english-poster.jpg',
+          name: 'English'
+        },
+        te: {
+          src: '/videos/digivote-intro-telugu.mp4',
+          poster: '/videos/digivote-intro-telugu-poster.jpg',
+          name: 'Telugu'
+        }
+      };
+      var video = document.getElementById('intro-video');
+      var source = document.getElementById('intro-source');
+      var buttons = {
+        en: document.getElementById('lang-en'),
+        te: document.getElementById('lang-te')
+      };
+      var group = document.getElementById('intro-lang');
+      var current = 'en';
+      var captionGeneration = 0;
+      if (!video || !source || !group || !buttons.en || !buttons.te) return;
+
+      function applyCaptionMode(lang) {
+        var els = video.querySelectorAll('track');
+        for (var i = 0; i < els.length; i++) {
+          var textTrack = els[i].track;
+          if (!textTrack) continue;
+          textTrack.mode = els[i].getAttribute('srclang') === lang ? 'showing' : 'disabled';
+        }
+      }
+
+      // Re-apply when the track finishes loading. A newer load bumps the
+      // generation, so turning captions off afterward is left alone.
+      function activateCaptions(lang) {
+        var generation = ++captionGeneration;
+        function apply() {
+          if (generation !== captionGeneration) return;
+          applyCaptionMode(lang);
+        }
+        apply();
+        setTimeout(apply, 0);
+        setTimeout(apply, 200);
+        var els = video.querySelectorAll('track');
+        for (var i = 0; i < els.length; i++) {
+          els[i].addEventListener('load', function onTrackLoad(event) {
+            event.currentTarget.removeEventListener('load', onTrackLoad);
+            apply();
+          });
+        }
+      }
+
+      function markSelected(lang) {
+        ['en', 'te'].forEach(function (code) {
+          var on = code === lang;
+          buttons[code].setAttribute('aria-checked', on ? 'true' : 'false');
+          buttons[code].tabIndex = on ? 0 : -1;
+        });
+      }
+
+      video.addEventListener('loadedmetadata', function () {
+        activateCaptions(current);
+      });
+
+      // Drop the existing tracks before loading the other film. Disabling them
+      // is not enough: a cue already painted by the player can stay on screen
+      // after the poster changes.
+      function replaceTracks(lang) {
+        var specs = [
+          { code: 'en', label: 'English', src: '/videos/digivote-intro-english.vtt' },
+          { code: 'te', label: 'తెలుగు', src: '/videos/digivote-intro-telugu.vtt' }
+        ];
+        var list = video.textTracks;
+        for (var i = 0; i < list.length; i++) list[i].mode = 'disabled';
+        var old = video.querySelectorAll('track');
+        for (var j = 0; j < old.length; j++) old[j].remove();
+        for (var k = 0; k < specs.length; k++) {
+          var el = document.createElement('track');
+          el.kind = 'captions';
+          el.srclang = specs[k].code;
+          el.label = specs[k].label;
+          el.src = specs[k].src;
+          if (specs[k].code === lang) el.default = true;
+          video.appendChild(el);
+        }
+      }
+
+      function selectLanguage(lang, fromKeyboard) {
+        if (!LANGS[lang]) return;
+        if (lang === current) {
+          if (fromKeyboard) buttons[lang].focus();
+          return;
+        }
+        current = lang;
+        markSelected(lang);
+        var meta = LANGS[lang];
+        source.src = meta.src;
+        video.poster = meta.poster;
+        video.setAttribute('aria-label', 'DigiVote intro video in ' + meta.name);
+        replaceTracks(lang);
+        video.load();
+        if (fromKeyboard) buttons[lang].focus();
+      }
+
+      buttons.en.addEventListener('click', function () { selectLanguage('en', false); });
+      buttons.te.addEventListener('click', function () { selectLanguage('te', false); });
+      group.addEventListener('keydown', function (event) {
+        var key = event.key;
+        if (key !== 'ArrowLeft' && key !== 'ArrowRight' && key !== 'ArrowUp' && key !== 'ArrowDown') return;
+        event.preventDefault();
+        var order = ['en', 'te'];
+        var index = order.indexOf(current);
+        if (key === 'ArrowRight' || key === 'ArrowDown') index = (index + 1) % order.length;
+        else index = (index - 1 + order.length) % order.length;
+        selectLanguage(order[index], true);
+      });
     })();
   </script>
 </body>
