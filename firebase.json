@@ -10,6 +10,17 @@
       {
         "source": "**",
         "headers": [{ "key": "Cache-Control", "value": "public,max-age=300" }]
+      },
+      {
+        "source": "**/*.mp4",
+        "headers": [{ "key": "Cache-Control", "value": "public,max-age=604800" }]
+      },
+      {
+        "source": "**/*.vtt",
+        "headers": [
+          { "key": "Content-Type", "value": "text/vtt; charset=utf-8" },
+          { "key": "Cache-Control", "value": "public,max-age=604800" }
+        ]
       }
     ],
     "cleanUrls": true,
