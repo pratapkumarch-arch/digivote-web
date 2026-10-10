@@ -329,12 +329,12 @@
         }
         apply();
         setTimeout(apply, 0);
+        setTimeout(apply, 200);
         var els = video.querySelectorAll('track');
         for (var i = 0; i < els.length; i++) {
           els[i].addEventListener('load', function onTrackLoad(event) {
             event.currentTarget.removeEventListener('load', onTrackLoad);
-            if (generation !== captionGeneration) return;
-            if (event.currentTarget.getAttribute('srclang') === lang) apply();
+            apply();
           });
         }
       }
@@ -351,6 +351,29 @@
         activateCaptions(current);
       });
 
+      // Drop the existing tracks before loading the other film. Disabling them
+      // is not enough: a cue already painted by the player can stay on screen
+      // after the poster changes.
+      function replaceTracks(lang) {
+        var specs = [
+          { code: 'en', label: 'English', src: '/videos/digivote-intro-english.vtt' },
+          { code: 'te', label: 'తెలుగు', src: '/videos/digivote-intro-telugu.vtt' }
+        ];
+        var list = video.textTracks;
+        for (var i = 0; i < list.length; i++) list[i].mode = 'disabled';
+        var old = video.querySelectorAll('track');
+        for (var j = 0; j < old.length; j++) old[j].remove();
+        for (var k = 0; k < specs.length; k++) {
+          var el = document.createElement('track');
+          el.kind = 'captions';
+          el.srclang = specs[k].code;
+          el.label = specs[k].label;
+          el.src = specs[k].src;
+          if (specs[k].code === lang) el.default = true;
+          video.appendChild(el);
+        }
+      }
+
       function selectLanguage(lang, fromKeyboard) {
         if (!LANGS[lang]) return;
         if (lang === current) {
@@ -363,11 +386,7 @@
         source.src = meta.src;
         video.poster = meta.poster;
         video.setAttribute('aria-label', 'DigiVote intro video in ' + meta.name);
-        var trackEls = video.querySelectorAll('track');
-        for (var i = 0; i < trackEls.length; i++) {
-          if (trackEls[i].getAttribute('srclang') === lang) trackEls[i].setAttribute('default', '');
-          else trackEls[i].removeAttribute('default');
-        }
+        replaceTracks(lang);
         video.load();
         if (fromKeyboard) buttons[lang].focus();
       }
