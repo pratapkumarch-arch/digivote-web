@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>You're invited to DigiVote</title>
+  <meta name="description" content="A friend invited you to DigiVote — take part in elections for your area." />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#0b3d2e" />
+  <meta property="og:title" content="You're invited to DigiVote" />
+  <meta property="og:description" content="Take part in elections for your area. Free on iPhone and Android." />
+  <meta property="og:image" content="https://digivoteindia.firebaseapp.com/digivote-icon.png" />
+  <link rel="icon" href="/icon-64.png" type="image/png" />
+  <style>
+    :root { --ink: #10241c; --forest: #0b3d2e; --sand: #f3efe6; --card: #fffcf7; --line: #d7d0c4; --muted: #5c6b63; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; color: var(--ink); background: var(--sand); line-height: 1.55; }
+    .wrap { width: min(520px, calc(100% - 2rem)); margin: 0 auto; padding: 2.5rem 0 3rem; text-align: center; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 1.75rem 1.25rem; }
+    h1 { margin: 0.75rem 0 0.25rem; font-size: 1.6rem; color: var(--forest); }
+    p { margin: 0.4rem 0; }
+    .te { color: var(--muted); }
+    .badges { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin: 1.25rem 0 1rem; }
+    .badges.web { margin-top: -0.25rem; }
+    .code-box { display: inline-block; margin-top: 0.5rem; padding: 0.6rem 1rem; border: 1px dashed var(--forest); border-radius: 10px; }
+    .code { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.2em; }
+    .small { font-size: 0.9rem; color: var(--muted); }
+    a.home { display: inline-block; margin-top: 1.25rem; color: var(--forest); }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="card">
+      <img src="/digivote-icon.png" width="88" height="88" alt="DigiVote app icon" />
+      <h1>You're invited to DigiVote</h1>
+      <p>Take part in elections for your area — free on iPhone and Android.</p>
+      <p class="te">మీ ప్రాంత ఎన్నికల్లో పాల్గొనండి — iPhone, Android లో ఉచితం.</p>
+      <div class="badges">
+        <a id="app-store" href="https://apps.apple.com/in/app/digivote/id6801540722" rel="noopener">
+          <img src="/badges/app-store.png" width="132" height="46" alt="Download DigiVote on the App Store" />
+        </a>
+        <a id="play" href="https://play.google.com/store/apps/details?id=com.pratapchittiboyna.digivote" rel="noopener">
+          <img src="/badges/google-play.png" width="132" height="46" alt="Get DigiVote on Google Play" />
+        </a>
+      </div>
+      <div class="badges web">
+        <a id="web" href="/">
+          <img src="/badges/web.svg" width="132" height="46" alt="Open DigiVote on the web" />
+        </a>
+      </div>
+      <div id="code-section" hidden>
+        <p class="small">When you register, enter this invite code:</p>
+        <div class="code-box"><span class="code" id="code"></span></div>
+      </div>
+    </div>
+    <a class="home" href="/get/">About DigiVote</a>
+  </main>
+  <script>
+    (function () {
+      var match = location.pathname.match(/^\/i\/([A-Za-z0-9]{6})\/?$/);
+      if (!match) return;
+      var code = match[1].toUpperCase();
+      if (!/^[A-HJ-NP-Z2-9]{6}$/.test(code)) return;
+      document.getElementById('code').textContent = code;
+      document.getElementById('code-section').hidden = false;
+      var play = document.getElementById('play');
+      play.href += '&referrer=' + encodeURIComponent('invite_code=' + code);
+    })();
+  </script>
+</body>
+</html>
