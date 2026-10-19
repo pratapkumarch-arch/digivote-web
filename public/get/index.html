@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DigiVote — Unofficial constituency pulse for India</title>
+  <meta name="description" content="An independent voter survey from Parliament to Gram Panchayats—helping citizens identify capable leaders and reduce the role of money and power in elections. DigiVote is not the Election Commission." />
+  <meta name="theme-color" content="#0b3d2e" />
+  <link rel="icon" href="/icon-64.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/icon-64.png" />
+  <style>
+    :root {
+      --ink: #10241c;
+      --forest: #0b3d2e;
+      --leaf: #1f6b4f;
+      --sand: #f3efe6;
+      --card: #fffcf7;
+      --line: #d7d0c4;
+      --muted: #5c6b63;
+      --warn: #7a4a12;
+      --warn-bg: #fff4e5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 10% -10%, #d8ebe2 0%, transparent 55%),
+        radial-gradient(900px 420px at 100% 0%, #efe6d4 0%, transparent 50%),
+        var(--sand);
+      line-height: 1.55;
+    }
+    a { color: var(--leaf); }
+    .wrap { width: min(720px, calc(100% - 2rem)); margin: 0 auto; padding: 2.25rem 0 3.5rem; }
+    header { text-align: center; margin-bottom: 1.75rem; }
+    .brand {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      text-decoration: none; color: inherit;
+    }
+    .brand img {
+      width: 56px; height: 56px; border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(11, 61, 46, 0.18);
+    }
+    .brand h1 {
+      margin: 0; font-size: clamp(1.9rem, 5vw, 2.45rem);
+      letter-spacing: -0.03em; color: var(--forest);
+    }
+    .tag {
+      margin: 0.85rem 0 0;
+      font-size: 1.05rem; color: var(--muted);
+      max-width: none;
+      width: 100%;
+      text-align: left;
+      margin-inline: 0;
+    }
+    .disclaimer {
+      background: var(--warn-bg); color: var(--warn);
+      border: 1px solid #edd4a8; border-radius: 12px;
+      padding: 0.9rem 1rem; margin: 1.25rem 0 1.5rem;
+      font-size: 0.95rem;
+    }
+    .disclaimer strong { display: block; margin-bottom: 0.25rem; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.15rem 1.2rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      margin: 0 0 0.65rem;
+      font-size: 1.05rem;
+      color: var(--forest);
+      letter-spacing: -0.01em;
+    }
+    ul { margin: 0; padding-left: 1.15rem; }
+    li { margin: 0.35rem 0; }
+    .links { display: grid; gap: 0.45rem; }
+    .links a { text-decoration: none; font-weight: 600; }
+    .links a:hover { text-decoration: underline; }
+    .get-app {
+      text-align: center;
+      padding: 1.5rem 1.2rem;
+      box-shadow: 0 10px 28px rgba(11, 61, 46, 0.08);
+    }
+    .app-icon {
+      display: block; margin: 0 auto;
+      width: 96px; height: 96px; border-radius: 22px;
+      box-shadow: 0 8px 24px rgba(11, 61, 46, 0.18);
+    }
+    .rating {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 0.2rem 0.5rem; margin-top: 0.85rem;
+    }
+    .rating[hidden] { display: none; }
+    .stars {
+      position: relative; display: inline-block;
+      font-size: 1.45rem; line-height: 1; letter-spacing: 0.08em;
+      color: #d9d9d9;
+    }
+    .stars-fill {
+      position: absolute; inset: 0 auto 0 0;
+      overflow: hidden; white-space: nowrap; color: #f2a33a;
+    }
+    .rating-value { font-size: 1.35rem; font-weight: 650; }
+    .rating-count { flex-basis: 100%; color: var(--muted); font-size: 0.95rem; }
+    .badges {
+      display: flex; flex-wrap: wrap; gap: 0.9rem;
+      justify-content: center; margin-top: 1.25rem;
+    }
+    .badges a { display: inline-block; line-height: 0; }
+    .badges img { height: 46px; width: auto; }
+    .intro { text-align: center; }
+    .intro-lead {
+      margin: 0 auto 0.9rem;
+      max-width: 38rem;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.1rem;
+      margin: 0 auto 1rem;
+    }
+    .lang-sep {
+      color: #b7b0a4;
+      font-weight: 500;
+      line-height: 1;
+      user-select: none;
+    }
+    .lang-toggle button {
+      appearance: none;
+      font: inherit;
+      font-weight: 650;
+      font-size: 1rem;
+      color: var(--muted);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: 999px;
+      padding: 0.3rem 0.75rem;
+      cursor: pointer;
+    }
+    .lang-toggle button:hover { color: var(--forest); }
+    .lang-toggle button[aria-checked="true"] {
+      color: var(--forest);
+      background: #e7f2ec;
+      border-color: #c5dfd2;
+    }
+    .lang-toggle button:focus-visible {
+      outline: 2px solid var(--leaf);
+      outline-offset: 2px;
+    }
+    .video-frame {
+      width: min(100%, 360px, calc(72vh * 9 / 16));
+      margin: 0 auto;
+    }
+    .video-frame video {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 9 / 16;
+      border-radius: 18px;
+      background: #10241c;
+      box-shadow: 0 12px 32px rgba(11, 61, 46, 0.16);
+    }
+    .intro-note {
+      margin: 0.8rem 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    footer {
+      margin-top: 1.75rem; text-align: center;
+      color: var(--muted); font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="/get/">
+        <img src="/icon-64.png" width="56" height="56" alt="DigiVote icon" />
+        <h1>DigiVote</h1>
+      </a>
+      <p class="tag">An independent voter survey from Parliament to Gram Panchayats—helping citizens identify capable leaders and reduce the role of money and power in elections.</p>
+      <p class="tag" style="margin-top:0.65rem">
+        Already registered?
+        <a href="/" style="font-weight:600">Open DigiVote on the web</a>
+      </p>
+    </header>
+
+    <div class="disclaimer" role="note">
+      <strong>Not the Election Commission of India</strong>
+      DigiVote is a private community tool for informal sentiment only. It is not a government service and has no legal effect on any real election. For adults 18+.
+    </div>
+
+    <section class="get-app" aria-label="Download DigiVote">
+      <img class="app-icon" src="/digivote-icon.png" width="96" height="96" alt="DigiVote app icon" />
+      <div class="rating" id="app-rating" hidden>
+        <span class="stars" aria-hidden="true"><span class="stars-fill" id="app-rating-fill">★★★★★</span>★★★★★</span>
+        <span class="rating-value" id="app-rating-value"></span>
+        <span class="rating-count" id="app-rating-count"></span>
+      </div>
+      <div class="badges">
+        <a href="https://apps.apple.com/in/app/digivote/id6801540722" target="_blank" rel="noopener">
+          <img src="/badges/app-store.png" width="132" height="46" alt="Download DigiVote on the App Store" />
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=com.pratapchittiboyna.digivote" target="_blank" rel="noopener">
+          <img src="/badges/google-play.png" width="132" height="46" alt="Get DigiVote on Google Play" />
+        </a>
+      </div>
+    </section>
+
+    <section class="intro" aria-labelledby="intro-heading">
+      <h2 id="intro-heading">Watch the DigiVote intro</h2>
+      <p class="intro-lead">A three-minute walkthrough: sign in, choose your constituency, and follow a poll from nomination to results.</p>
+      <div class="lang-toggle" id="intro-lang" role="radiogroup" aria-label="Intro video language">
+        <button type="button" role="radio" id="lang-en" aria-checked="true" tabindex="0" lang="en">English</button>
+        <span class="lang-sep" aria-hidden="true">|</span>
+        <button type="button" role="radio" id="lang-te" aria-checked="false" tabindex="-1" lang="te">తెలుగు</button>
+      </div>
+      <figure class="video-frame">
+        <video id="intro-video" controls playsinline webkit-playsinline preload="metadata" width="720" height="1280"
+               poster="/videos/digivote-intro-english-v5-poster.jpg"
+               aria-label="DigiVote intro video in English">
+          <source id="intro-source" src="/videos/digivote-intro-english-v5.mp4" type="video/mp4" />
+          <track id="track-en" kind="captions" src="/videos/digivote-intro-english-v5.vtt" srclang="en" label="English" default />
+          <track id="track-te" kind="captions" src="/videos/digivote-intro-telugu-v5.vtt" srclang="te" label="తెలుగు" />
+        </video>
+        <figcaption class="intro-note">Captions are on for the selected language. Turn them off in the player if you prefer.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>What you can do</h2>
+      <ul>
+        <li>Sign in with an Indian (+91) mobile OTP</li>
+        <li>Register a simple profile (name, gender, age group, constituencies)</li>
+        <li>Nominate when nomination is open</li>
+        <li>Cast one anonymous ballot when the ballot stage is open</li>
+        <li>View results when they are published</li>
+        <li>Use pulse results for leader identification and enablement in your constituency</li>
+        <li>DigiVote’s digital in-app surveys run at least two months before elections—covering 543 Parliament, 4,123 Assembly, 71,881 Urban Ward, and 257,359 Gram Panchayat seats across India</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Privacy &amp; trust</h2>
+      <ul>
+        <li>We record that you voted — never who you voted for</li>
+        <li>Location is used only to suggest your constituency — GPS is never stored</li>
+        <li>No ads, no in-app purchases, and we do not sell your data</li>
+        <li>Delete your account anytime in the app</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Policies &amp; help</h2>
+      <div class="links">
+        <a href="https://digivote-api-t4hf2gpiya-el.a.run.app/privacy">Privacy Policy</a>
+        <a href="https://digivote-api-t4hf2gpiya-el.a.run.app/support">Support</a>
+        <a href="https://digivote-api-t4hf2gpiya-el.a.run.app/delete-account">Account deletion</a>
+        <a href="https://digivote-api-t4hf2gpiya-el.a.run.app/child-safety">Child safety standards</a>
+      </div>
+    </section>
+
+    <footer>
+      <p>Developer: Pratap Kumar Chittiboyna · Contact: <a href="mailto:pratapchittiboyna@zohomail.in">pratapchittiboyna@zohomail.in</a></p>
+      <p>Package: com.pratapchittiboyna.digivote</p>
+    </footer>
+  </div>
+  <script>
+    (function () {
+      fetch('https://itunes.apple.com/lookup?id=6801540722&country=in')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var app = (data.results || [])[0] || {};
+          var avg = Number(app.averageUserRating);
+          var count = Number(app.userRatingCount);
+          if (!avg || !count) return;
+          document.getElementById('app-rating-fill').style.width = (avg / 5 * 100) + '%';
+          document.getElementById('app-rating-value').textContent = avg.toFixed(1);
+          document.getElementById('app-rating-count').textContent =
+            '(' + count.toLocaleString('en-IN') + (count === 1 ? ' rating' : ' ratings') + ' on the App Store)';
+          var box = document.getElementById('app-rating');
+          box.setAttribute('aria-label', 'Rated ' + avg.toFixed(1) + ' out of 5 on the App Store');
+          box.hidden = false;
+        })
+        .catch(function () {});
+    })();
+
+    (function () {
+      var LANGS = {
+        en: {
+          src: '/videos/digivote-intro-english-v5.mp4',
+          poster: '/videos/digivote-intro-english-v5-poster.jpg',
+          name: 'English'
+        },
+        te: {
+          src: '/videos/digivote-intro-telugu-v5.mp4',
+          poster: '/videos/digivote-intro-telugu-v5-poster.jpg',
+          name: 'Telugu'
+        }
+      };
+      var video = document.getElementById('intro-video');
+      var source = document.getElementById('intro-source');
+      var buttons = {
+        en: document.getElementById('lang-en'),
+        te: document.getElementById('lang-te')
+      };
+      var group = document.getElementById('intro-lang');
+      var current = 'en';
+      var captionGeneration = 0;
+      if (!video || !source || !group || !buttons.en || !buttons.te) return;
+
+      function applyCaptionMode(lang) {
+        var els = video.querySelectorAll('track');
+        for (var i = 0; i < els.length; i++) {
+          var textTrack = els[i].track;
+          if (!textTrack) continue;
+          textTrack.mode = els[i].getAttribute('srclang') === lang ? 'showing' : 'disabled';
+        }
+      }
+
+      // Re-apply when the track finishes loading. A newer load bumps the
+      // generation, so turning captions off afterward is left alone.
+      function activateCaptions(lang) {
+        var generation = ++captionGeneration;
+        function apply() {
+          if (generation !== captionGeneration) return;
+          applyCaptionMode(lang);
+        }
+        apply();
+        setTimeout(apply, 0);
+        setTimeout(apply, 200);
+        var els = video.querySelectorAll('track');
+        for (var i = 0; i < els.length; i++) {
+          els[i].addEventListener('load', function onTrackLoad(event) {
+            event.currentTarget.removeEventListener('load', onTrackLoad);
+            apply();
+          });
+        }
+      }
+
+      function markSelected(lang) {
+        ['en', 'te'].forEach(function (code) {
+          var on = code === lang;
+          buttons[code].setAttribute('aria-checked', on ? 'true' : 'false');
+          buttons[code].tabIndex = on ? 0 : -1;
+        });
+      }
+
+      video.addEventListener('loadedmetadata', function () {
+        activateCaptions(current);
+      });
+
+      // Drop the existing tracks before loading the other film. Disabling them
+      // is not enough: a cue already painted by the player can stay on screen
+      // after the poster changes.
+      function replaceTracks(lang) {
+        var specs = [
+          { code: 'en', label: 'English', src: '/videos/digivote-intro-english-v5.vtt' },
+          { code: 'te', label: 'తెలుగు', src: '/videos/digivote-intro-telugu-v5.vtt' }
+        ];
+        var list = video.textTracks;
+        for (var i = 0; i < list.length; i++) list[i].mode = 'disabled';
+        var old = video.querySelectorAll('track');
+        for (var j = 0; j < old.length; j++) old[j].remove();
+        for (var k = 0; k < specs.length; k++) {
+          var el = document.createElement('track');
+          el.kind = 'captions';
+          el.srclang = specs[k].code;
+          el.label = specs[k].label;
+          el.src = specs[k].src;
+          if (specs[k].code === lang) el.default = true;
+          video.appendChild(el);
+        }
+      }
+
+      function selectLanguage(lang, fromKeyboard) {
+        if (!LANGS[lang]) return;
+        if (lang === current) {
+          if (fromKeyboard) buttons[lang].focus();
+          return;
+        }
+        current = lang;
+        markSelected(lang);
+        var meta = LANGS[lang];
+        source.src = meta.src;
+        video.poster = meta.poster;
+        video.setAttribute('aria-label', 'DigiVote intro video in ' + meta.name);
+        replaceTracks(lang);
+        video.load();
+        if (fromKeyboard) buttons[lang].focus();
+      }
+
+      buttons.en.addEventListener('click', function () { selectLanguage('en', false); });
+      buttons.te.addEventListener('click', function () { selectLanguage('te', false); });
+      group.addEventListener('keydown', function (event) {
+        var key = event.key;
+        if (key !== 'ArrowLeft' && key !== 'ArrowRight' && key !== 'ArrowUp' && key !== 'ArrowDown') return;
+        event.preventDefault();
+        var order = ['en', 'te'];
+        var index = order.indexOf(current);
+        if (key === 'ArrowRight' || key === 'ArrowDown') index = (index + 1) % order.length;
+        else index = (index - 1 + order.length) % order.length;
+        selectLanguage(order[index], true);
+      });
+    })();
+  </script>
+</body>
+</html>
