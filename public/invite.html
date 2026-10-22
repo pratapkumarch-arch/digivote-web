@@ -25,6 +25,8 @@
     .code-box { display: inline-block; margin-top: 0.5rem; padding: 0.6rem 1rem; border: 1px dashed var(--forest); border-radius: 10px; }
     .code { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.2em; }
     .small { font-size: 0.9rem; color: var(--muted); }
+    .copy { margin-top: 0.75rem; padding: 0.55rem 1.1rem; font: inherit; font-weight: 600; color: #fff; background: var(--forest); border: 0; border-radius: 10px; cursor: pointer; }
+    .copied { min-height: 1.4em; }
     a.home { display: inline-block; margin-top: 1.25rem; color: var(--forest); }
   </style>
 </head>
@@ -51,6 +53,8 @@
       <div id="code-section" hidden>
         <p class="small">When you register, enter this invite code:</p>
         <div class="code-box"><span class="code" id="code"></span></div>
+        <div><button type="button" class="copy" id="copy-code">Copy code</button></div>
+        <p class="small copied" id="copied" aria-live="polite"></p>
       </div>
     </div>
     <a class="home" href="/get/">About DigiVote</a>
@@ -65,6 +69,21 @@
       document.getElementById('code-section').hidden = false;
       var play = document.getElementById('play');
       play.href += '&referrer=' + encodeURIComponent('invite_code=' + code);
+
+      // iPhone has no install referrer: the app offers to paste this at registration.
+      var clip = 'DigiVote invite code: ' + code;
+      function copyCode(note) {
+        if (!navigator.clipboard) return;
+        navigator.clipboard.writeText(clip).then(function () {
+          if (note) document.getElementById('copied').textContent = note;
+        }, function () {});
+      }
+      document.getElementById('copy-code').addEventListener('click', function () {
+        copyCode('Copied. Tap “Paste invite code” when you register.');
+      });
+      document.getElementById('app-store').addEventListener('click', function () {
+        copyCode();
+      });
     })();
   </script>
 </body>
